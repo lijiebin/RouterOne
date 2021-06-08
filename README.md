@@ -1,2 +1,2 @@
 # RouterOne
-A basic php web application url router library
+A basic and simple to understand php web application url routing library

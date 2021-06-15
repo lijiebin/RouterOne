@@ -95,6 +95,22 @@ $this->post('news/add', function () {
 
 ```
 
+With Route Parameters, dynamic paramters with `{}` wrapped, then will be transfer to controller method or clousre function paramter in the order of appearance.
+
+```php
+
+$this->get('test/{param1}/{param2}', [Controllers\TestController::class, 'params']);
+
+class TestController
+{
+    public function params($param1, $param2)
+    {
+        // Some code ...
+    }
+}
+
+```
+
 ### MiddleWare
 
 ```php

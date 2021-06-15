@@ -23,7 +23,17 @@ use RouterOne\Router;
 $router = Router::getInstance();
 
 ```
-Set route map files dir & loading it. (The route map file default extension is `.php`)
+Create route map in single file, in the file `$this` refer to concrete `$router` object instance. For the http request verbs, `RouteOne` only support `GET`, `POST`(just align with PHP's $_GET & $_POST, totally extending if you want or necessary.)
+
+```php
+// Define home page url path with a welcome message using closure funciton
+$this->get('/', function () {
+    echo 'Hello! RouterOne';
+});
+  
+```
+
+Set route map file directory path & loading it. (The route map file default extension is `.php`)
 ```php
 
 $router->setIncludePath(`YOUR_ROUTE_MAP_FILE_DIR`);

@@ -23,3 +23,12 @@ use RouterOne\Router;
 $router = Router::getInstance();
 
 ```
+Set route map files dir & loading it. The route map file default extension is `.php`
+```php
+/** 
+
+
+$router->setIncludePath(`YOUR_ROUTE_MAP_FILE_DIR`);
+$router->load(`FOO`, 'BAR');
+
+```

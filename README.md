@@ -33,7 +33,7 @@ $this->get('/', function () {
     echo 'Hello! RouterOne';
 });
 
-// `WelcomeController::hello` call
+// `WelcomeController::hello()` call
 $this->get('/', [WeclomeController::class, 'hello']);
   
 ```
@@ -50,5 +50,12 @@ Or call like this
 ```php
 
 $router->setIncludePath(`YOUR_ROUTE_MAP_FILE_DIR`)->load(['Foo']); // Just file's name without extension
+
+```
+Run dispatch and enable all loaded routes, it will be return the result about actually route called.
+
+```php
+
+$res = $router->dispatch();
 
 ```

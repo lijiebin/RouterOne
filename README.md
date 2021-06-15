@@ -64,7 +64,48 @@ $res = $router->dispatch();
 
 ### Add One Route
 
+Controller Action: 
+```php
+
+// Http GET
+$this->get('index', [Controllers\SiteController::class, 'index']);
+
+// Http POST
+$this->post('news/add', [Controllers\NewsController::class, 'add']);
+
+```
+
+Closure function Action:
+
+```php
+
+// Http GET
+$this->get('index', function () {
+    /**
+    * Some logic process code here
+    */
+});
+
+// Http POST
+$this->post('news/add', function () {
+    /**
+    * Some logic process code here
+    */
+});
+
+```
+
 ### MiddleWare
+
+```php
+
+// Http GET
+$this->get('index', [Controllers\SiteController::class, 'index']);
+
+// Http POST
+$this->post('news/add', [Controllers\NewsController::class, 'add']);
+
+```
 
 ### Suffix & Suffix
 

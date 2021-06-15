@@ -111,15 +111,28 @@ class TestController
 
 ```
 
+```php
+$this->get('test/{param1}/{param2}', function ($param1, $param2) {
+    // Some code
+});
+
+```
+
 ### MiddleWare
 
 ```php
 
-// Http GET
-$this->get('index', [Controllers\SiteController::class, 'index']);
+// Admin Role Check Demo
+$this->middleware(
+    [
+        AuthCheck::class,
+    ], function () {
+        $this->get('admin/index', [Controllers\Admin\AdminController::class, 'index']);
+        $this->get('admin/news/list', [Controllers\Admin\NewsController::class, 'list']);
+        ...
+        ...
+});
 
-// Http POST
-$this->post('news/add', [Controllers\NewsController::class, 'add']);
 
 ```
 

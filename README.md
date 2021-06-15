@@ -59,3 +59,14 @@ Run dispatch and enable all loaded routes, it will be return the result about ac
 $res = $router->dispatch();
 
 ```
+
+## Explains
+
+### Add One Route
+
+### MiddleWare
+
+### Suffix & Suffix
+
+### Domain Restrict
+

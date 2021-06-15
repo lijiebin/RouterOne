@@ -64,7 +64,7 @@ $res = $router->dispatch();
 
 ### Add One Route
 
-Controller Action: 
+Controller Route Action: 
 ```php
 
 // Http GET
@@ -75,7 +75,7 @@ $this->post('news/add', [Controllers\NewsController::class, 'add']);
 
 ```
 
-Closure function Action:
+Closure Route Action:
 
 ```php
 
@@ -119,6 +119,46 @@ $this->get('test/{param1}/{param2}', function ($param1, $param2) {
 ```
 
 ### MiddleWare
+
+MiddleWare should be a implemetion to `RouteMiddleWareInterface`,  you can locate middle-ware class file in arbitrary directory, such as `MiddleWare` dir;
+
+A typical middle-ware class contain a `handle()` method with route action-`$action` parameter, like below:
+
+```php
+
+use RouterOne\MiddleWare\RouteMiddleWareInterface;
+
+class AuthCheckMiddleWare implements RouteMiddleWareInterface
+{
+    public static function handle($action)
+    {
+        if ( ! AdminUser::Logged) {
+            exit('Please login first.');
+        }
+        
+        $action();
+    }
+}
+
+```
+
+In some cases you may want do some process after route action excuted, just place middle-ware logic behind `$action()` call statement.
+
+```php
+
+use RouterOne\MiddleWare\RouteMiddleWareInterface;
+
+class AfterMiddleWare implements RouteMiddleWareInterface
+{
+    public static function handle($action)
+    {
+        $action();
+        
+        echo 'This text will print after route action excuted.';
+    }
+}
+
+```
 
 ```php
 

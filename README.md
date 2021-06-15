@@ -23,13 +23,18 @@ use RouterOne\Router;
 $router = Router::getInstance();
 
 ```
-Create route map in single file, in the file `$this` refer to concrete `$router` object instance. For the http request verbs, `RouteOne` only support `GET`, `POST`(just align with PHP's $_GET & $_POST, totally extending if you want or necessary.)
+Create route map in single file and located in specific dir of your prject, in the file `$this` refer to concrete `$router` object instance. For the http request verbs, `RouteOne` only support `GET`, `POST`(just align with PHP's $_GET & $_POST, totally extending if you want or necessary.)
 
+For example, `Foo.php`
 ```php
-// Define home page url path with a welcome message using closure funciton
+
+// Closure function call
 $this->get('/', function () {
     echo 'Hello! RouterOne';
 });
+
+// `WelcomeController::hello` call
+$this->get('/', [WeclomeController::class, 'hello']);
   
 ```
 
@@ -37,13 +42,13 @@ Set route map file directory path & loading it. (The route map file default exte
 ```php
 
 $router->setIncludePath(`YOUR_ROUTE_MAP_FILE_DIR`);
-$router->load(`FOO`, 'BAR'); // Just file's name without extension
+$router->load(['Foo']); // Just file's name without extension
 
 ```
 Or call like this
 
 ```php
 
-$router->setIncludePath(`YOUR_ROUTE_MAP_FILE_DIR`)->load(`FOO`, 'BAR'); // Just file's name without extension
+$router->setIncludePath(`YOUR_ROUTE_MAP_FILE_DIR`)->load(['Foo']); // Just file's name without extension
 
 ```

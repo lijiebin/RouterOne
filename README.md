@@ -14,3 +14,12 @@ A independent, easy-to-use, expandable and simple to understand php web applicat
 
 ## installation
 Download the source code and place right location of your project directory.
+
+## Basic Usage
+Get Router Oject Instance
+```php
+use RouterOne\Router;
+
+$router = Router::getInstance();
+
+```

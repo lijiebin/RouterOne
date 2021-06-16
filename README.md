@@ -120,7 +120,7 @@ $this->get('test/{param1}/{param2}', function ($param1, $param2) {
 
 ### MiddleWare
 
-MiddleWare should be a implemetion to `RouteMiddleWareInterface`,  you can locate middle-ware class file in arbitrary directory, such as `MiddleWare` dir;
+MiddleWare should be a implementation to `RouteMiddleWareInterface`,  you can locate middle-ware class file in arbitrary directory, such as `MiddleWare` dir;
 
 A typical middle-ware class contain a `handle()` method with route action-`$action` parameter, like below:
 

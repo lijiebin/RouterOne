@@ -160,7 +160,7 @@ class AfterMiddleWare implements RouteMiddleWareInterface
 
 ```
 
-When defined middle-ware, and can through router's `middleware()` method setting routes as grouped form, `middleware()` has two parameters, the first is a `middle-ware` class name array, and the other is a closure function include common route mapping.
+When defined middle-ware, and can through router's `middleware()` method setting routes as `grouped` form, `middleware()` has two parameters, the first is a `middle-ware` class name array, and the other is a closure function include common route mapping.
 ```php
 
 // Admin Role Check Demo

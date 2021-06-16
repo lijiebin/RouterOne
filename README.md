@@ -206,11 +206,22 @@ $this->middleware(
 
 `prefix()` and `suffix()` method are `grouped` routes too, they can convenient add practical prefix and suffix to specific routes.
 
-Add the prefix `static`, then urls 'http://domain/static/page1', 'http://domain/static/page2' will matched. 
+Add the prefix `static`, then urls '://domain/static/page1', '//domain/static/page2' will matched. 
 
 ```php
 
 $this->prefix('static/', function () {
+    $this->get('page1', ...);
+    $this->get('page2', ...);
+    ...
+});
+
+```
+Add the preifx `the`, then urls '://domain/thepage1', '//domain/thepage2' will matched. 
+
+```php
+
+$this->prefix('the', function () {
     $this->get('page1', ...);
     $this->get('page2', ...);
     ...

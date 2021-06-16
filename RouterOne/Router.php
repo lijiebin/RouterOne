@@ -2,17 +2,12 @@
 
 namespace RouterOne;
 
+use RouterOne\Exception\RouteNotFoundException;
+use RouterOne\Exception\RouteMethodNotAllowedException;
+
 class Router
 {
-    protected $map = [];
-    
-    protected $handlers;
-    
     protected $pathInfo;
-    
-    protected $routePrefix;
-    
-    protected $routeSuffix;
     
     protected $routeDomain;
     
@@ -20,15 +15,31 @@ class Router
     
     protected $currentAction;
     
+    protected $currentDomain;
+    
+    protected $map = [];
+    
+    protected $handlers = [];
+    
+    protected $routePrefix = [];
+    
+    protected $routeSuffix = [];
+    
     private static $_instance;
     
     public function __construct()
     {
         self::$_instance = $this;
+        
+        $this->currentDomain = $this->getCurrentDomain();
+        $this->map['static'][$this->currentDomain] = [];
+        $this->map['dynamic'][$this->currentDomain] = [];
     }
     
     public static function getInstance()
     {
+        if (! self::$_instance) self::$_instance = new self();
+        
         return self::$_instance;
     }
     
@@ -45,7 +56,7 @@ class Router
         if ( ! $this->pathInfo) $this->pathInfo = '/';
         
         if ( ! $this->matchStaticRoute() && ! $this->matchDynamicRoute() ) {
-            throw new \Exception("No route matched with url path `{$this->pathInfo}`");
+            throw new RouteNotFoundException("No route matched with url path `{$this->pathInfo}`");
         }
     }
     
@@ -53,12 +64,9 @@ class Router
     {
         $matched = false;
         
-        foreach ($this->map['static'][$this->getCurrentDomain()] as $path => $routeOptions) {
+        foreach ($this->map['static'][$this->currentDomain] as $path => $routeOptions) {
             if ($this->pathInfo == $path) {
-                $this->currentPath = $path;
-                $this->routeOptions = $routeOptions;
-                $this->currentRouteParams = [];
-                $this->currentAction = $routeOptions['action'];
+                $this->_setMatchedRouteInfo($path, $routeOptions, []);
                 $matched = true;
                 break;
             }
@@ -71,15 +79,12 @@ class Router
     {
         $matched = false;
         
-        foreach ($this->map['dynamic'][$this->getCurrentDomain()] as $path => $routeOptions) {
+        foreach ($this->map['dynamic'][$this->currentDomain] as $path => $routeOptions) {
             $routePattern = str_replace("/", "\/", $path);
             $routePattern = preg_replace("/\{[A-Za-z0-9-._]+\}/", "([A-Za-z0-9-._]+)", $routePattern);
             if (preg_match("/^{$routePattern}$/", $this->pathInfo, $params)) {
-                $this->currentPath = $path;
-                $this->routeOptions = $routeOptions;
-                $this->currentRouteParams = array_slice($params, 1);
-                $this->currentAction = $routeOptions['action'];
                 $matched = true;
+                $this->_setMatchedRouteInfo($path, $routeOptions, array_slice($params, 1), true);
                 break;
             }
         }
@@ -87,21 +92,29 @@ class Router
         return $matched;
     }
     
+    private function _setMatchedRouteInfo(string $routePath, array $routeOptions, array $params, bool $isDynamic = false)
+    {
+        $this->routeOptions = $routeOptions;
+        $this->currentPath = $routePath;
+        $this->currentRouteParams = $params;
+        $this->currentAction = $routeOptions['action'];
+    }
+    
     public function prefix(string $prefix, \Closure $routes)
     {
-        $this->routePrefix = $prefix;
+        $this->routePrefix[] = $prefix;
         $routes();
-        $this->routePrefix = null;
+        $this->routePrefix = [];
     }
     
     public function suffix(string $suffix, \Closure $routes)
     {
-        $this->routeSuffix = $suffix;
+        $this->routeSuffix[] = $suffix;
         $routes();
-        $this->routeSuffix = null;
+        $this->routeSuffix = [];
     }
     
-    public function domain(string $domain, \Closure $routes)
+    public function domain(string $domain, \Closure $routes, $isSecure = false)
     {
         $this->routeDomain = $domain;
         $routes();
@@ -113,47 +126,38 @@ class Router
         $this->currentAction = $action;
     }
     
-    public function middleware($handlers, $routes)
+    public function middleware(array $handlers, \Closure $routes)
     {
-        $this->handlers = $handlers;
+        $this->handlers = array_merge($handlers, $this->handlers);
         $routes();
-        $this->handlers = null;
+        $this->handlers = [];
     }
     
-    public function withMiddleWare($handlers)
+    public function get(string $path, $action)
     {
-        $this->handlers = $handlers;
+        $this->_addRoute('GET', $path, $action);
     }
     
-    public function get($path, $action)
+    public function post(string $path, $action)
     {
-        $this->method = 'GET';
-        
-        $this->_addRoute($path, $action);
+        $this->_addRoute('POST', $path, $action);
     }
     
-    public function post($path, $action)
-    {
-        $this->method = 'POST';
-        
-        $this->_addRoute($path, $action);
-    }
-    
-    private function _addRoute($path, $action)
+    private function _addRoute(string $method, string $path, $action)
     {
         if ($this->routePrefix) {
-            $path = "{$this->routePrefix}/{$path}";
+            $path = implode('', $this->routePrefix) . $path;
         }
         
         if ($this->routeSuffix) {
-            $path = "{$path}{$this->routeSuffix}";
+            $path .= implode('', $this->routeSuffix);
         }
         
-        $domain = $this->routeDomain ?? $this->getCurrentDomain();
+        $domain = $this->routeDomain ?? ( $this->routeDomain = $this->currentDomain);
         
         $route = [
+            'method' => $method,
             'action' => $action,
-            'method' => $this->method,
             'handlers' => $this->handlers,
         ];
         
@@ -164,7 +168,7 @@ class Router
         }
     }
     
-    private function _isDynamicRoute($path)
+    private function _isDynamicRoute(string $path)
     {
         return preg_match("/\{[A-Za-z0-9-._]+\}/", $path);
     }
@@ -186,6 +190,11 @@ class Router
             };
         }
         
+        $requestMethod = $_SERVER['REQUEST_METHOD'];
+        if (strcasecmp($this->routeOptions['method'], $_SERVER['REQUEST_METHOD']) != 0) {
+            throw new RouteMethodNotAllowedException("Route request with `{$requestMethod}` method is invalid");
+        }
+        
         if ($this->routeOptions['handlers']) {
             $handlers = array_reverse($this->routeOptions['handlers']);
             foreach ($handlers as $midware) {
@@ -196,18 +205,14 @@ class Router
         }
         
         /** 
-         * @example Equal to `$action(...$this->currentRouteParams)` 
+         * Equal to `$action(...$this->currentRouteParams)` 
          */
         return call_user_func_array($action, $this->currentRouteParams);
     }
     
     public function getCurrentDomain()
     {
-        $domain = strtolower($_SERVER['HTTP_HOST']);
-        
-        if (strstr($domain, 'www.')) {
-            $domain = ltrim($domain, 'www.');
-        }
+        $domain = ltrim(strtolower($_SERVER['HTTP_HOST']), 'www.');
         
         return $domain;
     }
@@ -222,13 +227,13 @@ class Router
         return $this->currentAction;
     }
     
-    public function setIncludePath($path)
+    public function setIncludePath(string $path)
     {
         $this->includePath = rtrim($path, "/ \\") . DIRECTORY_SEPARATOR;
         return $this;
     }
     
-    public function load($routeFiles, $extension = '.php')
+    public function load($routeFiles, string $extension = '.php')
     {
         if ( ! is_array($routeFiles)) {
             $routeFiles = [$routeFiles];
@@ -241,4 +246,13 @@ class Router
         }
         return $routes;
     }
+    
+    public static function url(string $path, $isSecure = false)
+    {
+        $domain = self::$_instance->currentDomain;
+        $protocol = $isSecure ? 'https' : 'http';
+        
+        return "{$protocol}://{$domain}/{$path}";
+    }
 }
+

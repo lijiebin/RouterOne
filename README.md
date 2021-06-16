@@ -255,6 +255,22 @@ $this->prefix('static/', function () {
 
 ```
 
-
 ### Domain Restrict
+If your application has multiple url domain, use `domain()` method can distinguish these domain and guiding the request to corresponding route group.
+
+```php
+
+$this->domain('www.hereisyoursite.com', function () { // PC Pages
+    $this->get('index', ...);
+    ...
+});
+            
+$this->domain('m.hereisyoursite.com', function () { // Mobile Pages
+    $this->get('index', ...);
+    ...
+    
+});
+
+```
+
 

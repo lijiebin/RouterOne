@@ -2,7 +2,7 @@
 
 namespace RouterOne\Exception;
 
-class RouteMethodNotAllowedException extends \Exception
+class RouteMethodNotAllowedException extends RouteException
 {
 
 }

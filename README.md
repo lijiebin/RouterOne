@@ -240,6 +240,21 @@ $this->suffix('.html', function () {
 });
 
 ```
+Between `prefix()` and `suffix()` can `nested` each other.
+
+```php
+
+$this->prefix('static/', function () {
+    $this->get('page1', ...);  // request url '://domain/static/page1' matched here
+    ...
+    
+    $this->suffix('.html', function () {
+        $this->get('page2',  ...); // request url '://domain/static/page2.html' matched here
+    });
+});
+
+```
+
 
 ### Domain Restrict
 

@@ -271,6 +271,19 @@ $this->domain('m.hereisyoursite.com', function () { // Mobile Pages
     
 });
 
+
+
+$this->domain('new.hereisyoursite.com', function () { // Current Domain routes
+    $this->get('index', ...);
+    ...
+});
+            
+$this->domain('old.hereisyoursite.com', function () { // Legacy Domain routes
+    $this->get('index', ...);
+    ...
+    
+});
+
 ```
 
 

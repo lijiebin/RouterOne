@@ -199,7 +199,7 @@ class Router
             $handlers = array_reverse($this->routeOptions['handlers']);
             foreach ($handlers as $midware) {
                 $action = function () use ($action, $midware){
-                    $midware::handle($action);
+                    return $midware::handle($action);
                 };
             }
         }

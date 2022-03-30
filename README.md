@@ -95,7 +95,7 @@ $this->post('news/add', function () {
 
 ```
 
-With Route Parameters, dynamic paramters with `{}` wrapped, then will be transfer to controller method or clousre function paramter in the order of appearance. 
+With Route Parameters, dynamic paramters with `{}` wrapped, then will be transfer to controller method or clousre function paramter by the order of appearance. 
 
 ```php
 

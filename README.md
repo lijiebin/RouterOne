@@ -5,7 +5,7 @@ A independent, easy-to-use, expandable and simple to understand php web applicat
 - Grouped routes
 - Route-Map files loading
 - URL domain distinguishable
-- MidlleWare internal support
+- MiddleWare internal support
 - Route path prefix & suffix customization
 
 ## Requirements

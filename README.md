@@ -25,7 +25,7 @@ $router = Router::getInstance();
 ```
 Create route map in single file and located in specific dir of your prject, in the file `$this` refer to concrete `$router` object instance. For the http request verbs, `RouteOne` only support `GET`, `POST`(just align with PHP's $_GET & $_POST, totally extending if you want or necessary.)
 
-For example, `Foo.php`
+For example, `Foo.php`. RouterOne can support multiple route map files, such as `frontend_route_map.php`, `backend_route_map.php`, .
 ```php
 
 // Closure function call
